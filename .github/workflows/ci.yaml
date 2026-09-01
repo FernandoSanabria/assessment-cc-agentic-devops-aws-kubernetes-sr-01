@@ -43,7 +43,7 @@ jobs:
       - run: npm run lint
 
   test:
-    needs: install
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -58,7 +58,7 @@ jobs:
       - run: npm test -- --watchAll=false
 
   build:
-    needs: install
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
