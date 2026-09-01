@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - 'feature-*'
+      - 'feature/**'
   pull_request:
     branches:
       - main
@@ -39,10 +39,11 @@ jobs:
         with:
           path: codebase/rdicidr-0.1.0/node_modules
           key: node-modules-${{ hashFiles('codebase/rdicidr-0.1.0/package-lock.json') }}
+          fail-on-cache-miss: true
       - run: npm run lint
 
   test:
-    needs: install
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -53,10 +54,11 @@ jobs:
         with:
           path: codebase/rdicidr-0.1.0/node_modules
           key: node-modules-${{ hashFiles('codebase/rdicidr-0.1.0/package-lock.json') }}
+          fail-on-cache-miss: true
       - run: npm test -- --watchAll=false
 
   build:
-    needs: install
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -66,5 +68,6 @@ jobs:
       - uses: actions/cache/restore@v3
         with:
           path: codebase/rdicidr-0.1.0/node_modules
-          key: deps-${{ hashFiles('codebase/rdicidr-0.1.0/package-lock.json') }}
+          key: node-modules-${{ hashFiles('codebase/rdicidr-0.1.0/package-lock.json') }}
+          fail-on-cache-miss: true
       - run: npm run build
