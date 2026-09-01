@@ -1,1 +1,1 @@
-[{"baseRefName":"main","headRefName":"feature/ci-fixes","headRefOid":"511f0cbeca43e574d8f96d31c1feba1af8d52b07","mergeCommit":null,"mergedAt":null,"number":1,"title":"fix(ci): repair the four-step CI pipeline"}]
+[{"baseRefName":"main","headRefName":"feature/ci-fixes","headRefOid":"035b4b117796f3098f86f11298d57e1ae4a1a0aa","mergeCommit":{"oid":"e2f3a9c3b5549200969bd4a885ca56f330166d74"},"mergedAt":"2026-09-01T23:05:12Z","number":1,"title":"fix(ci): repair the four-step CI pipeline"}]
