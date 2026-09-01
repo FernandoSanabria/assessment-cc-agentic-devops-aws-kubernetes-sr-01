@@ -1,0 +1,4 @@
+Place the artifacts the challenge asks you to capture here:
+  pull-requests.json  - gh pr list --state all --json ... > evidence/pull-requests.json
+  k8s-state.json      - kubectl get statefulset,pod,svc,endpoints -n production -o json > evidence/k8s-state.json
+  version.json        - curl -s http://<your-public-url>/version > evidence/version.json

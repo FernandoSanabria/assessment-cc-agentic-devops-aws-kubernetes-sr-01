@@ -1,0 +1,101 @@
+name: CI Evidence
+
+# Records the result of every CI Pipeline run to .ci-evidence/ and commits it
+# back to the branch that triggered the run.
+#
+# DO NOT EDIT THIS WORKFLOW, and do not delete anything under .ci-evidence/ --
+# including the records of failed runs. The failure -> pass progression is part
+# of what is graded.
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    # Only record runs from branches in this repository. Fork PRs get a
+    # read-only token and cannot be committed to.
+    if: github.event.workflow_run.head_repository.full_name == github.repository
+    steps:
+      - name: Check out the branch the CI run was triggered from
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - name: Build the evidence record
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          mkdir -p .ci-evidence
+
+          # Per-job conclusions for this run
+          jobs_json="$(gh api \
+            "repos/${REPO}/actions/runs/${RUN_ID}/jobs?per_page=100" \
+            --jq '[.jobs[] | {name: .name, status: .status, conclusion: .conclusion, started_at: .started_at, completed_at: .completed_at}]')"
+
+          run_json="$(gh api "repos/${REPO}/actions/runs/${RUN_ID}" \
+            --jq '{
+              run_id: .id,
+              run_number: .run_number,
+              run_attempt: .run_attempt,
+              workflow_name: .name,
+              event: .event,
+              status: .status,
+              conclusion: .conclusion,
+              head_branch: .head_branch,
+              head_sha: .head_sha,
+              html_url: .html_url,
+              created_at: .created_at,
+              updated_at: .updated_at
+            }')"
+
+          echo "$run_json" \
+            | jq --argjson jobs "$jobs_json" \
+                 --arg recorded_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                 '. + {jobs: $jobs, recorded_at: $recorded_at}' \
+            > ".ci-evidence/${RUN_ID}.json"
+
+          echo "Recorded .ci-evidence/${RUN_ID}.json"
+          cat ".ci-evidence/${RUN_ID}.json"
+
+      - name: Commit the evidence record
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -f ".ci-evidence/${RUN_ID}.json"
+          if git diff --cached --quiet; then
+            echo "No evidence change to commit."
+            exit 0
+          fi
+
+          git commit -m "ci-evidence: run ${RUN_ID} (${CONCLUSION})"
+
+          # The CI run may be several commits behind by now; rebase before pushing.
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:${HEAD_BRANCH}"; then
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}), rebasing onto origin/${HEAD_BRANCH}..."
+            git fetch origin "${HEAD_BRANCH}"
+            git rebase "origin/${HEAD_BRANCH}"
+          done
+
+          echo "Failed to push evidence record after 3 attempts." >&2
+          exit 1
