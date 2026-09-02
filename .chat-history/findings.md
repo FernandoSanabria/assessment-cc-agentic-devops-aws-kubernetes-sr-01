@@ -102,3 +102,97 @@ dependency era. `npm audit fix --force` would replace react-scripts wholesale. O
   `selector: app: rdicidr-web` which matches no pod label (`app: rdicidr`).
 - `codebase/rdicidr-0.1.0/Dockerfile` — no `ARG` for the commit SHA or workflow run id, and
   `nginx.conf` has no `/version` location, both of which the CD evidence requirement needs.
+
+---
+
+# Part 2 — Kubernetes manifests: findings not acted on
+
+Recorded against branch `feature/k8s-fixes`.
+
+## 10. `imagePullPolicy: IfNotPresent` — the FIXME comment is wrong, left as-is
+
+`k8s/deployment.yaml:20` carries an inline invitation to change it:
+
+    imagePullPolicy: IfNotPresent  # FIXME: pods sometimes use stale image — should this be Always?
+
+**No. Following it breaks the deployment.** `rdicidr:latest` exists only in the local
+daemon and was side-loaded into the cluster node (`kind load docker-image`). There is no
+registry behind it. `Always` forces a pull on every container start, the pull fails, and
+every pod lands in `ErrImagePull`/`ImagePullBackOff` — turning a working deployment into a
+broken one.
+
+The comment's premise is also a real concern in the wrong place: staleness with a mutable
+`:latest` tag is solved by pinning an immutable tag (a digest, or the commit SHA the CD
+pipeline already has to compute for `GET /version`), not by changing the pull policy.
+
+Left exactly as written. Nothing failed because of it — the pods pulled from the node's
+own image store on the very first apply:
+
+    Normal  Pulled  Container image "rdicidr:latest" already present on machine
+
+## 11. Aggressive liveness probe timings — left alone
+
+    livenessProbe:
+      initialDelaySeconds: 1
+      periodSeconds: 3
+      failureThreshold: 1
+
+`failureThreshold: 1` means one missed probe kills the container, with no tolerance for a
+transient hiccup, and a 1-second initial delay leaves almost no startup grace. On a busier
+node this is the kind of setting that produces mystery restart loops.
+
+But nothing observed failed because of it once the probe pointed at the right port. Soaked
+for 4 minutes under continuous request load and across a deliberate pod deletion:
+
+    t=0   restarts: 0 0 0   ready: true true true
+    ...
+    t=222 restarts: 0 0 0   ready: true true true
+
+nginx serving static files is ready in well under a second, so the tight timings hold.
+Changing them would be tuning for a hypothetical, so they stay.
+
+## 12. `/health` probe path — correct as written, left alone
+
+Both probes target `/health`, and it would be easy to assume that path is part of the
+seeded breakage. It is not: `codebase/rdicidr-0.1.0/nginx.conf:12-16` defines the location
+and returns 200 `ok`. Verified directly against the image before touching the manifests.
+Only the *port* was wrong, not the path.
+
+## 13. `k8s/deployment.yaml` still named "deployment" though it holds a StatefulSet
+
+Cosmetic. Renaming it churns the diff and nothing reads the filename except
+`kubectl apply -f k8s/`, whose only filename dependency is sort order — which is now
+handled explicitly by `00-namespace.yaml`.
+
+## 14. `type: ClusterIP` on the Service — correct, left alone
+
+ClusterIP is right for a Service that sits behind an Ingress. NodePort or LoadBalancer
+would expose the pods outside the cluster a second time, bypassing the Ingress and the
+`fsl-challenge.me` host routing entirely.
+
+## 15. No PersistentVolumeClaim / volumeClaimTemplates on the StatefulSet
+
+A StatefulSet without storage looks incomplete, but this app is a stateless nginx serving
+a static bundle baked into the image. Adding `volumeClaimTemplates` would create PVCs that
+nothing writes to. The brief asks for a StatefulSet, not for persistence.
+
+## 16. Environment: Docker Desktop's Kubernetes is broken on this machine
+
+Not a repo defect, but it shaped the work. `kubectl` was pointed at a **live AWS EKS
+cluster** (`arn:aws:eks:us-west-2:326156889801:cluster/fsl-admin-v1-staging`) when this
+started. Expired credentials meant nothing was sent to it. Switched to `docker-desktop`,
+which was also dead — its kubelet client certificate expired on 2025-09-25 and has been
+failing every start since at least May 2026:
+
+    E0901 22:38:41 bootstrap.go:266] part of the existing bootstrap client certificate
+      in /etc/kubernetes/kubelet.conf is expired: 2025-09-25 17:11:55 +0000 UTC
+    E0901 22:38:41 run.go:74] "command failed" err="failed to run Kubelet: unable to
+      load bootstrap kubeconfig: stat /etc/kubernetes/bootstrap-kubelet.conf:
+      no such file or directory"
+    [lifecycle-server] POST /kubernetes/start (10m0.0s): context canceled
+
+Fixing that needs Docker Desktop's "Reset Kubernetes Cluster" (a GUI action that wipes
+cluster state). Instead of touching it, provisioned a separate `kind` cluster —
+non-destructive, and "Docker Desktop, Minikube, **or equivalent**" is what the brief
+permits. Docker Desktop's configuration was left untouched and still needs that reset if
+its own cluster is wanted back.
