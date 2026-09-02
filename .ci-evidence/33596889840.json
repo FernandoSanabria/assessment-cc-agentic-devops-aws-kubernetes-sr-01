@@ -1,0 +1,45 @@
+{
+  "conclusion": "success",
+  "created_at": "2026-09-02T05:59:02Z",
+  "event": "push",
+  "head_branch": "feature/aws-deploy",
+  "head_sha": "5f02a3474ef955667e0f84d728ae8e785373c226",
+  "html_url": "https://github.com/FernandoSanabria/assessment-cc-agentic-devops-aws-kubernetes-sr-01/actions/runs/33596889840",
+  "run_attempt": 1,
+  "run_id": 33596889840,
+  "run_number": 33,
+  "status": "completed",
+  "updated_at": "2026-09-02T06:00:32Z",
+  "workflow_name": "CI Pipeline",
+  "jobs": [
+    {
+      "completed_at": "2026-09-02T05:59:34Z",
+      "conclusion": "success",
+      "name": "install",
+      "started_at": "2026-09-02T05:59:05Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-09-02T05:59:52Z",
+      "conclusion": "success",
+      "name": "lint",
+      "started_at": "2026-09-02T05:59:37Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-09-02T06:00:10Z",
+      "conclusion": "success",
+      "name": "test",
+      "started_at": "2026-09-02T05:59:54Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-09-02T06:00:31Z",
+      "conclusion": "success",
+      "name": "build",
+      "started_at": "2026-09-02T06:00:15Z",
+      "status": "completed"
+    }
+  ],
+  "recorded_at": "2026-09-02T06:00:39Z"
+}
