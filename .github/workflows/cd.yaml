@@ -31,17 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # TEMPORARY diagnostic: prints the OIDC token's sub/aud claims so the
-      # trust policy can be matched against what GitHub actually sends.
-      - name: Show OIDC token claims
-        run: |
-          set -euo pipefail
-          TOKEN=$(curl -sS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" | jq -r .value)
-          echo "$TOKEN" | cut -d. -f2 | tr '_-' '/+' \
-            | base64 -d 2>/dev/null \
-            | jq '{sub, aud, repository, repository_owner, ref}'
-
       - name: Assume the deploy role via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
