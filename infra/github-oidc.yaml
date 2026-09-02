@@ -13,6 +13,14 @@ Parameters:
   GitHubRepo:
     Type: String
     Default: assessment-cc-agentic-devops-aws-kubernetes-sr-01
+  GitHubOwnerId:
+    Type: String
+    Default: "40775927"
+    Description: Numeric GitHub account id, used by the immutable-id sub format.
+  GitHubRepoId:
+    Type: String
+    Default: "1354055024"
+    Description: Numeric GitHub repository id, used by the immutable-id sub format.
 
 Resources:
 
@@ -49,8 +57,18 @@ Resources:
                 # Scoped to this one repository. Not "repo:owner/*", not "*".
                 # The trailing segment covers branches, tags and environments
                 # within this repo only.
+                #
+                # Two forms are accepted because GitHub now issues subjects
+                # carrying immutable numeric ids -- observed on this repo as
+                #   repo:FernandoSanabria@40775927/<repo>@1354055024:ref:...
+                # rather than the documented repo:<owner>/<repo>:ref:...
+                # The id form is the stronger of the two: it survives a rename
+                # and cannot be re-claimed by recreating a repo with the same
+                # name. The plain form is kept so the role keeps working if
+                # GitHub serves the legacy format.
                 token.actions.githubusercontent.com:sub:
-                  !Sub "repo:${GitHubOwner}/${GitHubRepo}:*"
+                  - !Sub "repo:${GitHubOwner}/${GitHubRepo}:*"
+                  - !Sub "repo:${GitHubOwner}@${GitHubOwnerId}/${GitHubRepo}@${GitHubRepoId}:*"
       Policies:
         - PolicyName: ecr-push
           PolicyDocument:
