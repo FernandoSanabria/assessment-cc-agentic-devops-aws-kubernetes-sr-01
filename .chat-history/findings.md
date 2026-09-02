@@ -196,3 +196,82 @@ cluster state). Instead of touching it, provisioned a separate `kind` cluster �
 non-destructive, and "Docker Desktop, Minikube, **or equivalent**" is what the brief
 permits. Docker Desktop's configuration was left untouched and still needs that reset if
 its own cluster is wanted back.
+
+---
+
+# Part 3 — AWS CD pipeline: findings not acted on
+
+Recorded against branch `feature/aws-deploy`.
+
+## 17. `.ci-evidence/` will not record CD Pipeline runs
+
+The brief said the evidence workflow filters on the CD workflow's name, so the CD workflow
+was named exactly `CD Pipeline` as instructed. But `.github/workflows/evidence.yaml:12`
+reads:
+
+    workflows: ["CI Pipeline"]
+
+It watches **CI Pipeline only**. No `CD Pipeline` run will ever produce a `.ci-evidence/`
+record, whatever the CD workflow is called.
+
+Left alone because the brief states plainly: *"Do not edit that workflow."* Adding
+`"CD Pipeline"` to that array is a one-word change and would make CD runs record
+themselves, but it is explicitly out of bounds. Flagged so the gap is understood as a
+constraint rather than an oversight. CD evidence is instead captured directly into
+`evidence/` — `ecs-service.json`, `target-health.json`, `version.json`.
+
+## 18. HTTP only — no TLS on the load balancer
+
+The listener is plain HTTP on port 80. The brief asks for `http://<public-url>/version`
+and an HTTPS listener needs an ACM certificate, which needs a domain that can be validated
+— neither exists here. A self-signed certificate would break `curl` without `-k` and make
+the evidence harder to trust, not easier.
+
+Consequence worth naming: the app is served over unencrypted HTTP on the public internet.
+For anything real, this wants an ACM certificate on a domain you control plus an HTTP→HTTPS
+redirect rule. Nothing in this application handles credentials or personal data, so the
+exposure here is limited to traffic being readable in transit.
+
+## 19. Deprecated Node 20 actions in the CD workflow
+
+Every run annotates:
+
+    Node.js 20 is deprecated. The following actions target Node.js 20 but are being
+    forced to run on Node.js 24: actions/checkout@v4,
+    aws-actions/configure-aws-credentials@v4
+
+`@v4` is the current major of both. The annotation comes from GitHub's runtime migration,
+not from a stale pin, and there is no `@v5` of `configure-aws-credentials` to move to.
+Annotation only; nothing fails.
+
+## 20. Fargate tasks run in public subnets
+
+Tasks carry a public IP so they can reach ECR and CloudWatch Logs without a NAT gateway.
+The alternative — private subnets plus a NAT gateway, or VPC endpoints for ECR/S3/logs —
+is the more common production shape, but a NAT gateway costs roughly $32/month before
+data processing, which is a poor trade for a challenge deployment.
+
+The exposure is contained: `TaskSecurityGroup` accepts traffic only from
+`AlbSecurityGroup`, so despite the public IP the containers are not reachable from the
+internet. Verified by the security group rules, which name the ALB's group as the sole
+ingress source.
+
+## 21. `:bootstrap` image tag that never exists
+
+`platform.yaml`'s initial task definition references `<repo>:bootstrap`, a tag nothing ever
+pushes. It is never pulled, because the service is created with zero tasks and the CD
+Pipeline replaces the task definition before scaling up. Left as a deliberate, commented
+placeholder rather than removed — a task definition must name some image.
+
+## 22. Local Kubernetes deployment untouched
+
+Part 2's manifests and the kind cluster are unaffected by any of this. The Dockerfile
+gained `ARG GIT_SHA` / `ARG RUN_ID`, both defaulting to `unknown`, so the local image still
+builds and runs identically — verified by rebuilding, reloading into kind, restarting the
+StatefulSet and re-checking `http://fsl-challenge.me/` (200) before committing.
+
+## 23. Running cost
+
+An ALB bills hourly whether or not it serves traffic (~$16/month), plus two Fargate tasks at
+256 CPU units / 512 MB. Teardown commands are in `infra/README.md`. Worth running once the
+recording is done — nothing here tears itself down.
