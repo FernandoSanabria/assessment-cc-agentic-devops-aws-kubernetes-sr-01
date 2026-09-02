@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rdicidr
   namespace: production
   labels:
     app: rdicidr
 spec:
+  serviceName: rdicidr-service
   replicas: 2
   selector:
     matchLabels:
