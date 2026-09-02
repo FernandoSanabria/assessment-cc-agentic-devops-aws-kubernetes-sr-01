@@ -1,0 +1,1069 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "apps/v1",
+            "kind": "StatefulSet",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"StatefulSet\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"rdicidr\"},\"name\":\"rdicidr\",\"namespace\":\"production\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"rdicidr\"}},\"serviceName\":\"rdicidr-service\",\"template\":{\"metadata\":{\"labels\":{\"app\":\"rdicidr\"}},\"spec\":{\"containers\":[{\"image\":\"rdicidr:latest\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"failureThreshold\":1,\"httpGet\":{\"path\":\"/health\",\"port\":\"http\"},\"initialDelaySeconds\":1,\"periodSeconds\":3},\"name\":\"rdicidr\",\"ports\":[{\"containerPort\":80,\"name\":\"http\"}],\"readinessProbe\":{\"httpGet\":{\"path\":\"/health\",\"port\":\"http\"},\"initialDelaySeconds\":5,\"periodSeconds\":5},\"resources\":{\"limits\":{\"cpu\":\"250m\",\"memory\":\"128Mi\"},\"requests\":{\"cpu\":\"25m\",\"memory\":\"32Mi\"}}}]}}}}\n"
+                },
+                "creationTimestamp": "2026-09-02T04:28:36Z",
+                "generation": 1,
+                "labels": {
+                    "app": "rdicidr"
+                },
+                "name": "rdicidr",
+                "namespace": "production",
+                "resourceVersion": "2231",
+                "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
+            },
+            "spec": {
+                "persistentVolumeClaimRetentionPolicy": {
+                    "whenDeleted": "Retain",
+                    "whenScaled": "Retain"
+                },
+                "podManagementPolicy": "OrderedReady",
+                "replicas": 3,
+                "revisionHistoryLimit": 10,
+                "selector": {
+                    "matchLabels": {
+                        "app": "rdicidr"
+                    }
+                },
+                "serviceName": "rdicidr-service",
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "app": "rdicidr"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "image": "rdicidr:latest",
+                                "imagePullPolicy": "IfNotPresent",
+                                "livenessProbe": {
+                                    "failureThreshold": 1,
+                                    "httpGet": {
+                                        "path": "/health",
+                                        "port": "http",
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 1,
+                                    "periodSeconds": 3,
+                                    "successThreshold": 1,
+                                    "timeoutSeconds": 1
+                                },
+                                "name": "rdicidr",
+                                "ports": [
+                                    {
+                                        "containerPort": 80,
+                                        "name": "http",
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "readinessProbe": {
+                                    "failureThreshold": 3,
+                                    "httpGet": {
+                                        "path": "/health",
+                                        "port": "http",
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 5,
+                                    "periodSeconds": 5,
+                                    "successThreshold": 1,
+                                    "timeoutSeconds": 1
+                                },
+                                "resources": {
+                                    "limits": {
+                                        "cpu": "250m",
+                                        "memory": "128Mi"
+                                    },
+                                    "requests": {
+                                        "cpu": "25m",
+                                        "memory": "32Mi"
+                                    }
+                                },
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File"
+                            }
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "Always",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "updateStrategy": {
+                    "rollingUpdate": {
+                        "maxUnavailable": 1,
+                        "partition": 0
+                    },
+                    "type": "RollingUpdate"
+                }
+            },
+            "status": {
+                "availableReplicas": 3,
+                "collisionCount": 0,
+                "currentReplicas": 3,
+                "currentRevision": "rdicidr-7b68d7d7dd",
+                "observedGeneration": 1,
+                "readyReplicas": 3,
+                "replicas": 3,
+                "updateRevision": "rdicidr-7b68d7d7dd",
+                "updatedReplicas": 3
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "creationTimestamp": "2026-09-02T04:28:36Z",
+                "generateName": "rdicidr-",
+                "generation": 1,
+                "labels": {
+                    "app": "rdicidr",
+                    "apps.kubernetes.io/pod-index": "0",
+                    "controller-revision-hash": "rdicidr-7b68d7d7dd",
+                    "statefulset.kubernetes.io/pod-name": "rdicidr-0"
+                },
+                "name": "rdicidr-0",
+                "namespace": "production",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "apps/v1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "StatefulSet",
+                        "name": "rdicidr",
+                        "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
+                    }
+                ],
+                "resourceVersion": "877",
+                "uid": "f9e9ebbb-488b-4e09-979f-5dfec3bf89ea"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "rdicidr:latest",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 1,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 1,
+                            "periodSeconds": 3,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "name": "rdicidr",
+                        "ports": [
+                            {
+                                "containerPort": 80,
+                                "name": "http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "250m",
+                                "memory": "128Mi"
+                            },
+                            "requests": {
+                                "cpu": "25m",
+                                "memory": "32Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-4ffq2",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "hostname": "rdicidr-0",
+                "nodeName": "fsl-challenge-control-plane",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "subdomain": "rdicidr-service",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "kube-api-access-4ffq2",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:37Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:36Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:42Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:42Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:36Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "25m",
+                            "memory": "32Mi"
+                        },
+                        "containerID": "containerd://5e495a89851e912ed48c4d6663c1e96b5f10674719417df3a4cdf57277d81dae",
+                        "image": "docker.io/library/rdicidr:latest",
+                        "imageID": "docker.io/library/import-2026-09-02@sha256:68e328d60ad17cc5cb40eab46fe8ef12730022e98dfb8b893d5d25516f945b4e",
+                        "lastState": {},
+                        "name": "rdicidr",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "250m",
+                                "memory": "128Mi"
+                            },
+                            "requests": {
+                                "cpu": "25m",
+                                "memory": "32Mi"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-09-02T04:28:37Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0,
+                                    1,
+                                    2,
+                                    3,
+                                    4,
+                                    6,
+                                    10,
+                                    11,
+                                    20,
+                                    26,
+                                    27
+                                ],
+                                "uid": 0
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-4ffq2",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "172.19.0.2",
+                "hostIPs": [
+                    {
+                        "ip": "172.19.0.2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "10.244.0.6",
+                "podIPs": [
+                    {
+                        "ip": "10.244.0.6"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "250m",
+                        "memory": "128Mi"
+                    },
+                    "requests": {
+                        "memory": "32Mi"
+                    }
+                },
+                "startTime": "2026-09-02T04:28:36Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "creationTimestamp": "2026-09-02T04:40:40Z",
+                "generateName": "rdicidr-",
+                "generation": 1,
+                "labels": {
+                    "app": "rdicidr",
+                    "apps.kubernetes.io/pod-index": "1",
+                    "controller-revision-hash": "rdicidr-7b68d7d7dd",
+                    "statefulset.kubernetes.io/pod-name": "rdicidr-1"
+                },
+                "name": "rdicidr-1",
+                "namespace": "production",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "apps/v1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "StatefulSet",
+                        "name": "rdicidr",
+                        "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
+                    }
+                ],
+                "resourceVersion": "2232",
+                "uid": "7a628d55-65f1-4b47-b900-3bc9e577ac8d"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "rdicidr:latest",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 1,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 1,
+                            "periodSeconds": 3,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "name": "rdicidr",
+                        "ports": [
+                            {
+                                "containerPort": 80,
+                                "name": "http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "250m",
+                                "memory": "128Mi"
+                            },
+                            "requests": {
+                                "cpu": "25m",
+                                "memory": "32Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-htj8r",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "hostname": "rdicidr-1",
+                "nodeName": "fsl-challenge-control-plane",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "subdomain": "rdicidr-service",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "kube-api-access-htj8r",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:40:40Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:40:40Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:40:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:40:46Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:40:40Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "25m",
+                            "memory": "32Mi"
+                        },
+                        "containerID": "containerd://b94834f08640f91b5b823410316987e370d8ace3077ca697aa836fe88f07c5b9",
+                        "image": "docker.io/library/rdicidr:latest",
+                        "imageID": "docker.io/library/import-2026-09-02@sha256:68e328d60ad17cc5cb40eab46fe8ef12730022e98dfb8b893d5d25516f945b4e",
+                        "lastState": {},
+                        "name": "rdicidr",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "250m",
+                                "memory": "128Mi"
+                            },
+                            "requests": {
+                                "cpu": "25m",
+                                "memory": "32Mi"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-09-02T04:40:40Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0,
+                                    1,
+                                    2,
+                                    3,
+                                    4,
+                                    6,
+                                    10,
+                                    11,
+                                    20,
+                                    26,
+                                    27
+                                ],
+                                "uid": 0
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-htj8r",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "172.19.0.2",
+                "hostIPs": [
+                    {
+                        "ip": "172.19.0.2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "10.244.0.18",
+                "podIPs": [
+                    {
+                        "ip": "10.244.0.18"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "250m",
+                        "memory": "128Mi"
+                    },
+                    "requests": {
+                        "memory": "32Mi"
+                    }
+                },
+                "startTime": "2026-09-02T04:40:40Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "creationTimestamp": "2026-09-02T04:28:48Z",
+                "generateName": "rdicidr-",
+                "generation": 1,
+                "labels": {
+                    "app": "rdicidr",
+                    "apps.kubernetes.io/pod-index": "2",
+                    "controller-revision-hash": "rdicidr-7b68d7d7dd",
+                    "statefulset.kubernetes.io/pod-name": "rdicidr-2"
+                },
+                "name": "rdicidr-2",
+                "namespace": "production",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "apps/v1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "StatefulSet",
+                        "name": "rdicidr",
+                        "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
+                    }
+                ],
+                "resourceVersion": "929",
+                "uid": "d2b8efdf-702b-4f81-b52c-a4cba25ab611"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "rdicidr:latest",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 1,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 1,
+                            "periodSeconds": 3,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "name": "rdicidr",
+                        "ports": [
+                            {
+                                "containerPort": 80,
+                                "name": "http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "250m",
+                                "memory": "128Mi"
+                            },
+                            "requests": {
+                                "cpu": "25m",
+                                "memory": "32Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-986ls",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "hostname": "rdicidr-2",
+                "nodeName": "fsl-challenge-control-plane",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "subdomain": "rdicidr-service",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "kube-api-access-986ls",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:49Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:54Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:54Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-02T04:28:48Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "25m",
+                            "memory": "32Mi"
+                        },
+                        "containerID": "containerd://1f24b1b628a29c176f10707e5ef59869dd2cf5ba40e99be7927a9b2445778e19",
+                        "image": "docker.io/library/rdicidr:latest",
+                        "imageID": "docker.io/library/import-2026-09-02@sha256:68e328d60ad17cc5cb40eab46fe8ef12730022e98dfb8b893d5d25516f945b4e",
+                        "lastState": {},
+                        "name": "rdicidr",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "250m",
+                                "memory": "128Mi"
+                            },
+                            "requests": {
+                                "cpu": "25m",
+                                "memory": "32Mi"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-09-02T04:28:49Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0,
+                                    1,
+                                    2,
+                                    3,
+                                    4,
+                                    6,
+                                    10,
+                                    11,
+                                    20,
+                                    26,
+                                    27
+                                ],
+                                "uid": 0
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-986ls",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "172.19.0.2",
+                "hostIPs": [
+                    {
+                        "ip": "172.19.0.2"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "10.244.0.8",
+                "podIPs": [
+                    {
+                        "ip": "10.244.0.8"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "250m",
+                        "memory": "128Mi"
+                    },
+                    "requests": {
+                        "memory": "32Mi"
+                    }
+                },
+                "startTime": "2026-09-02T04:28:48Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"rdicidr-service\",\"namespace\":\"production\"},\"spec\":{\"ports\":[{\"port\":8080,\"protocol\":\"TCP\",\"targetPort\":\"http\"}],\"selector\":{\"app\":\"rdicidr\"},\"type\":\"ClusterIP\"}}\n"
+                },
+                "creationTimestamp": "2026-09-02T04:28:36Z",
+                "name": "rdicidr-service",
+                "namespace": "production",
+                "resourceVersion": "847",
+                "uid": "55daa253-a6db-4e74-a7de-901f4d5dbe0b"
+            },
+            "spec": {
+                "clusterIP": "10.96.136.45",
+                "clusterIPs": [
+                    "10.96.136.45"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "port": 8080,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "rdicidr"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Endpoints",
+            "metadata": {
+                "annotations": {
+                    "endpoints.kubernetes.io/last-change-trigger-time": "2026-09-02T04:40:46Z"
+                },
+                "creationTimestamp": "2026-09-02T04:28:36Z",
+                "labels": {
+                    "endpoints.kubernetes.io/managed-by": "endpoint-controller"
+                },
+                "name": "rdicidr-service",
+                "namespace": "production",
+                "resourceVersion": "2230",
+                "uid": "b3188769-835b-4b16-8bae-0c938555ba8e"
+            },
+            "subsets": [
+                {
+                    "addresses": [
+                        {
+                            "hostname": "rdicidr-1",
+                            "ip": "10.244.0.18",
+                            "nodeName": "fsl-challenge-control-plane",
+                            "targetRef": {
+                                "kind": "Pod",
+                                "name": "rdicidr-1",
+                                "namespace": "production",
+                                "uid": "7a628d55-65f1-4b47-b900-3bc9e577ac8d"
+                            }
+                        },
+                        {
+                            "hostname": "rdicidr-0",
+                            "ip": "10.244.0.6",
+                            "nodeName": "fsl-challenge-control-plane",
+                            "targetRef": {
+                                "kind": "Pod",
+                                "name": "rdicidr-0",
+                                "namespace": "production",
+                                "uid": "f9e9ebbb-488b-4e09-979f-5dfec3bf89ea"
+                            }
+                        },
+                        {
+                            "hostname": "rdicidr-2",
+                            "ip": "10.244.0.8",
+                            "nodeName": "fsl-challenge-control-plane",
+                            "targetRef": {
+                                "kind": "Pod",
+                                "name": "rdicidr-2",
+                                "namespace": "production",
+                                "uid": "d2b8efdf-702b-4f81-b52c-a4cba25ab611"
+                            }
+                        }
+                    ],
+                    "ports": [
+                        {
+                            "port": 80,
+                            "protocol": "TCP"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}
