@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  GitHub Actions OIDC identity provider and the deploy role the CD Pipeline
+  assumes. No long-lived AWS access keys exist anywhere in this setup.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: fsl-rdicidr
+  GitHubOwner:
+    Type: String
+    Default: FernandoSanabria
+  GitHubRepo:
+    Type: String
+    Default: assessment-cc-agentic-devops-aws-kubernetes-sr-01
+
+Resources:
+
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+      # AWS no longer verifies these for this provider, but the property is
+      # still accepted and pinning them costs nothing.
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
+
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-github-deploy"
+      Description: Assumed by GitHub Actions via OIDC to deploy the CD Pipeline.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubOidcProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                # Without this, any GitHub repository anywhere could present a
+                # token for a different audience.
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                # Scoped to this one repository. Not "repo:owner/*", not "*".
+                # The trailing segment covers branches, tags and environments
+                # within this repo only.
+                token.actions.githubusercontent.com:sub:
+                  !Sub "repo:${GitHubOwner}/${GitHubRepo}:*"
+      Policies:
+        - PolicyName: ecr-push
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # This one action has no resource-level support in IAM.
+              - Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+                  - ecr:PutImage
+                  - ecr:BatchGetImage
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:DescribeImages
+                Resource:
+                  Fn::ImportValue: !Sub "${ProjectName}-ecr-arn"
+        - PolicyName: ecs-deploy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # RegisterTaskDefinition and DescribeTaskDefinition do not
+              # support resource-level permissions.
+              - Effect: Allow
+                Action:
+                  - ecs:RegisterTaskDefinition
+                  - ecs:DescribeTaskDefinition
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecs:UpdateService
+                  - ecs:DescribeServices
+                Resource:
+                  Fn::ImportValue: !Sub "${ProjectName}-service-arn"
+        - PolicyName: pass-task-roles
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # Limited to the two roles this task definition actually uses,
+              # and only when handing them to ECS.
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource:
+                  - Fn::ImportValue: !Sub "${ProjectName}-task-execution-role-arn"
+                  - Fn::ImportValue: !Sub "${ProjectName}-task-role-arn"
+                Condition:
+                  StringEquals:
+                    iam:PassedToService: ecs-tasks.amazonaws.com
+
+Outputs:
+  DeployRoleArn:
+    Value: !GetAtt DeployRole.Arn
+    Description: Store as the AWS_ROLE_ARN repository secret.

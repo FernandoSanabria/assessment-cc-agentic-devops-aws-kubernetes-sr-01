@@ -1,0 +1,283 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  rdicidr platform: network, ALB, ECR and an ECS Fargate service.
+  Everything the CD Pipeline needs in order to deploy, but no image and no
+  running tasks -- the workflow owns the rollout.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: fsl-rdicidr
+  ContainerPort:
+    Type: Number
+    Default: 80
+    Description: Port nginx listens on inside the image.
+  HealthCheckPath:
+    Type: String
+    Default: /health
+    Description: Verified against the image before use - nginx.conf serves 200 "ok" here.
+
+Resources:
+
+  # ---------- Network ----------
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags: [{Key: Name, Value: !Sub "${ProjectName}-vpc"}]
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags: [{Key: Name, Value: !Sub "${ProjectName}-igw"}]
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  # Two AZs: an ALB requires subnets in at least two.
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.42.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      MapPublicIpOnLaunch: true
+      Tags: [{Key: Name, Value: !Sub "${ProjectName}-public-a"}]
+
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.42.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      MapPublicIpOnLaunch: true
+      Tags: [{Key: Name, Value: !Sub "${ProjectName}-public-b"}]
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags: [{Key: Name, Value: !Sub "${ProjectName}-public-rt"}]
+
+  DefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetARouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: {SubnetId: !Ref SubnetA, RouteTableId: !Ref PublicRouteTable}
+
+  SubnetBRouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: {SubnetId: !Ref SubnetB, RouteTableId: !Ref PublicRouteTable}
+
+  # ---------- Security groups ----------
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Public HTTP ingress to the load balancer
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: Public HTTP
+      Tags: [{Key: Name, Value: !Sub "${ProjectName}-alb-sg"}]
+
+  # Tasks accept traffic only from the ALB, never directly from the internet,
+  # even though they carry a public IP for image pulls.
+  TaskSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Container ingress from the load balancer only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          SourceSecurityGroupId: !Ref AlbSecurityGroup
+          Description: From ALB
+      Tags: [{Key: Name, Value: !Sub "${ProjectName}-task-sg"}]
+
+  # ---------- Load balancer ----------
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${ProjectName}-alb"
+      Scheme: internet-facing
+      Type: application
+      Subnets: [!Ref SubnetA, !Ref SubnetB]
+      SecurityGroups: [!Ref AlbSecurityGroup]
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${ProjectName}-tg"
+      VpcId: !Ref Vpc
+      Port: !Ref ContainerPort
+      Protocol: HTTP
+      TargetType: ip
+      HealthCheckPath: !Ref HealthCheckPath
+      HealthCheckIntervalSeconds: 15
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      Matcher: {HttpCode: "200"}
+      TargetGroupAttributes:
+        - {Key: deregistration_delay.timeout_seconds, Value: "10"}
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions: [{Type: forward, TargetGroupArn: !Ref TargetGroup}]
+
+  # ---------- Registry, cluster, logs ----------
+  EcrRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ProjectName
+      ImageScanningConfiguration: {ScanOnPush: true}
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {"rules":[{"rulePriority":1,"description":"keep last 10 images",
+          "selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":10},
+          "action":{"type":"expire"}}]}
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/ecs/${ProjectName}"
+      RetentionInDays: 7
+
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ProjectName
+
+  # ---------- Task roles ----------
+  # Used by the ECS agent to pull the image and write logs.
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-task-execution"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ecs-tasks.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  # Assumed by the container itself. It needs nothing today -- nginx serving
+  # static files makes no AWS API calls -- but the service declares it so
+  # future permissions have somewhere to go that is not the execution role.
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-task"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ecs-tasks.amazonaws.com}
+            Action: sts:AssumeRole
+
+  # ---------- Task definition and service ----------
+  # This revision is a placeholder: it names an image tag that does not exist
+  # yet. It is never pulled, because the service starts with zero tasks. The
+  # CD Pipeline registers the first real revision and scales the service up.
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Ref ProjectName
+      RequiresCompatibilities: [FARGATE]
+      NetworkMode: awsvpc
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      RuntimePlatform:
+        CpuArchitecture: X86_64
+        OperatingSystemFamily: LINUX
+      ContainerDefinitions:
+        - Name: !Ref ProjectName
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProjectName}:bootstrap"
+          Essential: true
+          PortMappings: [{ContainerPort: !Ref ContainerPort, Protocol: tcp}]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: Listener
+    Properties:
+      ServiceName: !Ref ProjectName
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref TaskDefinition
+      LaunchType: FARGATE
+      # DesiredCount is deliberately omitted so CloudFormation does not manage
+      # it. The CD Pipeline sets the running count; a later stack update will
+      # not silently scale the service back down.
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      HealthCheckGracePeriodSeconds: 30
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: [!Ref SubnetA, !Ref SubnetB]
+          SecurityGroups: [!Ref TaskSecurityGroup]
+      LoadBalancers:
+        - ContainerName: !Ref ProjectName
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !Ref TargetGroup
+
+Outputs:
+  AlbDnsName:
+    Value: !GetAtt LoadBalancer.DNSName
+    Export: {Name: !Sub "${ProjectName}-alb-dns"}
+  TargetGroupArn:
+    Value: !Ref TargetGroup
+    Export: {Name: !Sub "${ProjectName}-target-group-arn"}
+  EcrRepositoryUri:
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProjectName}"
+    Export: {Name: !Sub "${ProjectName}-ecr-uri"}
+  EcrRepositoryArn:
+    Value: !GetAtt EcrRepository.Arn
+    Export: {Name: !Sub "${ProjectName}-ecr-arn"}
+  ClusterName:
+    Value: !Ref Cluster
+    Export: {Name: !Sub "${ProjectName}-cluster"}
+  ServiceName:
+    Value: !GetAtt Service.Name
+    Export: {Name: !Sub "${ProjectName}-service"}
+  ServiceArn:
+    Value: !Ref Service
+    Export: {Name: !Sub "${ProjectName}-service-arn"}
+  TaskExecutionRoleArn:
+    Value: !GetAtt TaskExecutionRole.Arn
+    Export: {Name: !Sub "${ProjectName}-task-execution-role-arn"}
+  TaskRoleArn:
+    Value: !GetAtt TaskRole.Arn
+    Export: {Name: !Sub "${ProjectName}-task-role-arn"}
+  TaskFamily:
+    Value: !Ref ProjectName
+    Export: {Name: !Sub "${ProjectName}-task-family"}
