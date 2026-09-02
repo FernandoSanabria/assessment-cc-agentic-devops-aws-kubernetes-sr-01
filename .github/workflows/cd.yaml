@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - main
+      # TEMPORARY: lets this branch exercise the pipeline before it is merged.
+      # workflow_dispatch cannot be used for that -- GitHub only offers it for
+      # workflows that already exist on the default branch. Removed before merge.
+      - feature/aws-deploy
   workflow_dispatch:
 
 concurrency:
