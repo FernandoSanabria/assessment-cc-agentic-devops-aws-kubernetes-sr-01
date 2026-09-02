@@ -233,9 +233,14 @@ Resources:
       Cluster: !Ref Cluster
       TaskDefinition: !Ref TaskDefinition
       LaunchType: FARGATE
-      # DesiredCount is deliberately omitted so CloudFormation does not manage
-      # it. The CD Pipeline sets the running count; a later stack update will
-      # not silently scale the service back down.
+      # Created with zero tasks on purpose. The initial task definition names
+      # an image tag that does not exist yet, so any non-zero count here
+      # deadlocks stack creation: ECS cannot pull, the service never reaches
+      # steady state, and CloudFormation waits on it. The CD Pipeline scales
+      # the service up as part of the first real rollout.
+      # Note: a later stack UPDATE resets this to 0, so re-run the CD Pipeline
+      # after changing this template.
+      DesiredCount: 0
       DeploymentConfiguration:
         MinimumHealthyPercent: 100
         MaximumPercent: 200
