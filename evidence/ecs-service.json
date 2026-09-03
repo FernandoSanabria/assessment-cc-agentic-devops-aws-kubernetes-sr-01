@@ -19,7 +19,7 @@
             "launchType": "FARGATE",
             "platformVersion": "LATEST",
             "platformFamily": "Linux",
-            "taskDefinition": "arn:aws:ecs:us-west-2:582093722569:task-definition/fsl-rdicidr:3",
+            "taskDefinition": "arn:aws:ecs:us-west-2:582093722569:task-definition/fsl-rdicidr:5",
             "deploymentConfiguration": {
                 "deploymentCircuitBreaker": {
                     "enable": false,
@@ -30,15 +30,15 @@
             },
             "deployments": [
                 {
-                    "id": "ecs-svc/2479841751019555619",
+                    "id": "ecs-svc/1734926891149207744",
                     "status": "PRIMARY",
-                    "taskDefinition": "arn:aws:ecs:us-west-2:582093722569:task-definition/fsl-rdicidr:3",
+                    "taskDefinition": "arn:aws:ecs:us-west-2:582093722569:task-definition/fsl-rdicidr:5",
                     "desiredCount": 2,
                     "pendingCount": 0,
                     "runningCount": 2,
                     "failedTasks": 0,
-                    "createdAt": "2026-09-02T01:03:08.795000-05:00",
-                    "updatedAt": "2026-09-02T01:05:35.987000-05:00",
+                    "createdAt": "2026-09-03T12:34:13.682000-05:00",
+                    "updatedAt": "2026-09-03T12:37:25.929000-05:00",
                     "launchType": "FARGATE",
                     "platformVersion": "1.4.0",
                     "platformFamily": "Linux",
@@ -55,11 +55,156 @@
                         }
                     },
                     "rolloutState": "COMPLETED",
-                    "rolloutStateReason": "ECS deployment ecs-svc/2479841751019555619 completed."
+                    "rolloutStateReason": "ECS deployment ecs-svc/1734926891149207744 completed."
                 }
             ],
             "roleArn": "arn:aws:iam::582093722569:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
             "events": [
+                {
+                    "id": "4299720f-ad26-4ef1-870b-d5d8fa4a2ca0",
+                    "createdAt": "2026-09-03T12:37:25.936000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "a31cf9a7-dd0a-4ecc-986c-2d6a720146d5",
+                    "createdAt": "2026-09-03T12:37:25.935000-05:00",
+                    "message": "(service fsl-rdicidr) (deployment ecs-svc/1734926891149207744) deployment completed."
+                },
+                {
+                    "id": "3a1de1d9-ce94-4d31-aba8-07064662c241",
+                    "createdAt": "2026-09-03T12:36:32.299000-05:00",
+                    "message": "(service fsl-rdicidr, taskSet ecs-svc/5624469319337737688) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "13767181-f413-418b-a2f2-1307d4b43481",
+                    "createdAt": "2026-09-03T12:36:32.293000-05:00",
+                    "message": "(service fsl-rdicidr) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "47f78fad-518a-4e65-b260-12d13322e808",
+                    "createdAt": "2026-09-03T12:36:22.695000-05:00",
+                    "message": "(service fsl-rdicidr) has stopped 1 running tasks: (task e9c60d47404345f9a792bcedb535d3e2)."
+                },
+                {
+                    "id": "c584ab1c-e1be-485f-8c65-fd6e23ee74ca",
+                    "createdAt": "2026-09-03T12:36:01.521000-05:00",
+                    "message": "(service fsl-rdicidr, taskSet ecs-svc/5624469319337737688) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "a6217bae-c2c6-46dd-88fc-174a82b9956e",
+                    "createdAt": "2026-09-03T12:36:01.515000-05:00",
+                    "message": "(service fsl-rdicidr) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "f9556e00-e8d2-4dcd-9106-e130ab881b85",
+                    "createdAt": "2026-09-03T12:35:51.548000-05:00",
+                    "message": "(service fsl-rdicidr) has stopped 1 running tasks: (task a6c6f7d102fa42bf8619d191f537a622)."
+                },
+                {
+                    "id": "b36ad262-5f9b-4873-a40b-9ee035f54851",
+                    "createdAt": "2026-09-03T12:35:31.738000-05:00",
+                    "message": "(service fsl-rdicidr) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "76b56491-f956-41ac-97b9-3bf59aa73fb8",
+                    "createdAt": "2026-09-03T12:35:01.062000-05:00",
+                    "message": "(service fsl-rdicidr) has started 1 tasks: (task b19e3c46bd3b46df9eb2d028b9181cfe)."
+                },
+                {
+                    "id": "b35f2742-2246-407e-b3b4-482f02592e16",
+                    "createdAt": "2026-09-03T12:35:00.359000-05:00",
+                    "message": "(service fsl-rdicidr) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "988559a6-b943-4184-9f16-dd5fe9e990db",
+                    "createdAt": "2026-09-03T12:34:29.428000-05:00",
+                    "message": "(service fsl-rdicidr) has started 1 tasks: (task 27e2b5b381964a0083f294d000626259)."
+                },
+                {
+                    "id": "05e84dba-5ffe-4e1b-a187-85bbe36dc4eb",
+                    "createdAt": "2026-09-03T11:09:24.371000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "d7e35bfe-6f91-4b83-ba0f-ca917f696b81",
+                    "createdAt": "2026-09-03T11:09:24.370000-05:00",
+                    "message": "(service fsl-rdicidr) (deployment ecs-svc/5624469319337737688) deployment completed."
+                },
+                {
+                    "id": "40b0490e-6110-4685-98d8-05c52f2a61c5",
+                    "createdAt": "2026-09-03T11:08:21.884000-05:00",
+                    "message": "(service fsl-rdicidr, taskSet ecs-svc/2479841751019555619) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "4a9cbbee-63e7-4980-9557-fb2ac0665bdf",
+                    "createdAt": "2026-09-03T11:08:21.878000-05:00",
+                    "message": "(service fsl-rdicidr) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "1daabe41-81cf-4777-8d15-d67163cc577f",
+                    "createdAt": "2026-09-03T11:08:20.319000-05:00",
+                    "message": "(service fsl-rdicidr) has stopped 1 running tasks: (task c1165bafc18b4aa4a311e28509379f03)."
+                },
+                {
+                    "id": "d8fa55bc-3ef0-4a10-9c15-24a8b0367691",
+                    "createdAt": "2026-09-03T11:07:49.508000-05:00",
+                    "message": "(service fsl-rdicidr, taskSet ecs-svc/2479841751019555619) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "9b168018-6e52-4272-8845-58446d02b3fc",
+                    "createdAt": "2026-09-03T11:07:49.503000-05:00",
+                    "message": "(service fsl-rdicidr) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "c05b9333-ebc8-48d8-9cd1-2db357bfd4ad",
+                    "createdAt": "2026-09-03T11:07:39.341000-05:00",
+                    "message": "(service fsl-rdicidr) has stopped 1 running tasks: (task 3a600ef61ca74ee7afd512555dcfcc1e)."
+                },
+                {
+                    "id": "c1e9f993-8b0a-480b-b2bd-74f89a8e02cf",
+                    "createdAt": "2026-09-03T11:07:29.081000-05:00",
+                    "message": "(service fsl-rdicidr) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "19ab4fa1-6084-4174-8649-f78f7ed9bd69",
+                    "createdAt": "2026-09-03T11:06:58.506000-05:00",
+                    "message": "(service fsl-rdicidr) has started 1 tasks: (task a6c6f7d102fa42bf8619d191f537a622)."
+                },
+                {
+                    "id": "cae120fe-6896-4a59-bb1d-4104d5d33d49",
+                    "createdAt": "2026-09-03T11:06:48.137000-05:00",
+                    "message": "(service fsl-rdicidr) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "801d6b1c-c90f-46bd-9505-ed5bbafbe888",
+                    "createdAt": "2026-09-03T11:06:16.966000-05:00",
+                    "message": "(service fsl-rdicidr) has started 1 tasks: (task e9c60d47404345f9a792bcedb535d3e2)."
+                },
+                {
+                    "id": "ec291144-ad92-4757-9540-1851b361d30d",
+                    "createdAt": "2026-09-03T07:06:53.030000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "7d2ef099-9a00-43c9-ac83-e586b8fa4b22",
+                    "createdAt": "2026-09-03T01:06:37.859000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "9030958f-3da3-4172-a5aa-e82a6b25e108",
+                    "createdAt": "2026-09-02T19:06:01.507000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "f65d955c-96e9-4b3b-9f16-b32efe8dd8cb",
+                    "createdAt": "2026-09-02T13:05:58.870000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "e219a151-a1ca-44a6-b7dd-5c690b72eb9a",
+                    "createdAt": "2026-09-02T07:05:41.423000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
                 {
                     "id": "b138b01a-fc0a-48cb-961c-d3b4d18d431e",
                     "createdAt": "2026-09-02T01:05:35.995000-05:00",
