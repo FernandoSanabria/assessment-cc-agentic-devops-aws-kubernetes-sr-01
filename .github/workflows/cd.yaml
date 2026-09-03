@@ -1,0 +1,109 @@
+name: CD Pipeline
+
+# Deploys the application image to ECS Fargate. Authentication is OIDC only --
+# the repository holds no AWS access keys, just the role ARN to assume.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: cd-pipeline
+  cancel-in-progress: false
+
+permissions:
+  id-token: write   # required to request the OIDC token
+  contents: read
+
+env:
+  AWS_REGION: us-west-2
+  PROJECT: fsl-rdicidr
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assume the deploy role via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-west-2
+          role-session-name: cd-pipeline-${{ github.run_id }}
+
+      - name: Log in to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push the image
+        working-directory: codebase/rdicidr-0.1.0
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          IMAGE="${REGISTRY}/${PROJECT}:${GITHUB_SHA}"
+          # Fargate runs X86_64 here; the runner is amd64 too, but state it
+          # so the platform can never drift from the task definition.
+          docker build \
+            --platform linux/amd64 \
+            --build-arg GIT_SHA="${GITHUB_SHA}" \
+            --build-arg RUN_ID="${GITHUB_RUN_ID}" \
+            -t "${IMAGE}" \
+            -t "${REGISTRY}/${PROJECT}:latest" \
+            .
+          docker push "${IMAGE}"
+          docker push "${REGISTRY}/${PROJECT}:latest"
+          echo "IMAGE=${IMAGE}" >> "${GITHUB_ENV}"
+
+      - name: Register a new task definition revision
+        run: |
+          set -euo pipefail
+          # Take the family's current revision and swap only the image, so
+          # cpu/memory/roles/logging stay whatever the CloudFormation stack
+          # defined rather than being restated here and drifting.
+          aws ecs describe-task-definition \
+            --task-definition "${PROJECT}" \
+            --query taskDefinition > current.json
+
+          jq --arg image "${IMAGE}" '
+            .containerDefinitions[0].image = $image
+            | {family, taskRoleArn, executionRoleArn, networkMode,
+               containerDefinitions, requiresCompatibilities, cpu, memory,
+               runtimePlatform}
+          ' current.json > next.json
+
+          ARN=$(aws ecs register-task-definition \
+                  --cli-input-json file://next.json \
+                  --query taskDefinition.taskDefinitionArn --output text)
+          echo "Registered ${ARN}"
+          echo "TASK_DEF_ARN=${ARN}" >> "${GITHUB_ENV}"
+
+      - name: Roll out to ECS
+        run: |
+          set -euo pipefail
+          aws ecs update-service \
+            --cluster "${PROJECT}" \
+            --service "${PROJECT}" \
+            --task-definition "${TASK_DEF_ARN}" \
+            --desired-count 2 \
+            --query 'service.deployments[0].[id,status,rolloutState]' \
+            --output text
+
+          echo "Waiting for the service to reach a steady state..."
+          aws ecs wait services-stable \
+            --cluster "${PROJECT}" \
+            --services "${PROJECT}"
+
+      - name: Report the rollout
+        run: |
+          set -euo pipefail
+          aws ecs describe-services \
+            --cluster "${PROJECT}" --services "${PROJECT}" \
+            --query 'services[0].{desired:desiredCount,running:runningCount,
+                     deployments:length(deployments),
+                     rolloutState:deployments[0].rolloutState,
+                     taskDefinition:taskDefinition}' \
+            --output table

@@ -1,0 +1,147 @@
+{
+    "services": [
+        {
+            "serviceArn": "arn:aws:ecs:us-west-2:582093722569:service/fsl-rdicidr/fsl-rdicidr",
+            "serviceName": "fsl-rdicidr",
+            "clusterArn": "arn:aws:ecs:us-west-2:582093722569:cluster/fsl-rdicidr",
+            "loadBalancers": [
+                {
+                    "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109",
+                    "containerName": "fsl-rdicidr",
+                    "containerPort": 80
+                }
+            ],
+            "serviceRegistries": [],
+            "status": "ACTIVE",
+            "desiredCount": 2,
+            "runningCount": 2,
+            "pendingCount": 0,
+            "launchType": "FARGATE",
+            "platformVersion": "LATEST",
+            "platformFamily": "Linux",
+            "taskDefinition": "arn:aws:ecs:us-west-2:582093722569:task-definition/fsl-rdicidr:3",
+            "deploymentConfiguration": {
+                "deploymentCircuitBreaker": {
+                    "enable": false,
+                    "rollback": false
+                },
+                "maximumPercent": 200,
+                "minimumHealthyPercent": 100
+            },
+            "deployments": [
+                {
+                    "id": "ecs-svc/2479841751019555619",
+                    "status": "PRIMARY",
+                    "taskDefinition": "arn:aws:ecs:us-west-2:582093722569:task-definition/fsl-rdicidr:3",
+                    "desiredCount": 2,
+                    "pendingCount": 0,
+                    "runningCount": 2,
+                    "failedTasks": 0,
+                    "createdAt": "2026-09-02T01:03:08.795000-05:00",
+                    "updatedAt": "2026-09-02T01:05:35.987000-05:00",
+                    "launchType": "FARGATE",
+                    "platformVersion": "1.4.0",
+                    "platformFamily": "Linux",
+                    "networkConfiguration": {
+                        "awsvpcConfiguration": {
+                            "subnets": [
+                                "subnet-08c778213c305f0c0",
+                                "subnet-0622011088cdd7137"
+                            ],
+                            "securityGroups": [
+                                "sg-0396cab4473b30fac"
+                            ],
+                            "assignPublicIp": "ENABLED"
+                        }
+                    },
+                    "rolloutState": "COMPLETED",
+                    "rolloutStateReason": "ECS deployment ecs-svc/2479841751019555619 completed."
+                }
+            ],
+            "roleArn": "arn:aws:iam::582093722569:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+            "events": [
+                {
+                    "id": "b138b01a-fc0a-48cb-961c-d3b4d18d431e",
+                    "createdAt": "2026-09-02T01:05:35.995000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "4b3aca48-c93b-4133-be80-c25dbfdeeb5e",
+                    "createdAt": "2026-09-02T01:05:35.994000-05:00",
+                    "message": "(service fsl-rdicidr) (deployment ecs-svc/2479841751019555619) deployment completed."
+                },
+                {
+                    "id": "1b900fa3-3494-4501-b338-813bdf07c722",
+                    "createdAt": "2026-09-02T01:04:43.860000-05:00",
+                    "message": "(service fsl-rdicidr) was unable to place a task. Reason: CannotPullContainerError: pull image manifest has been retried 7 time(s): failed to resolve ref 582093722569.dkr.ecr.us-west-2.amazonaws.com/fsl-rdicidr:bootstrap: 582093722569.dkr.ecr.us-west-2.amazonaws.com/fsl-rdicidr:bootstrap: not found."
+                },
+                {
+                    "id": "cf826322-6c68-4ba1-8af7-4efc29e45a8b",
+                    "createdAt": "2026-09-02T01:04:23.956000-05:00",
+                    "message": "(service fsl-rdicidr) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "0e6712a4-4e44-40a3-84cd-b3fc3e182b06",
+                    "createdAt": "2026-09-02T01:04:03.673000-05:00",
+                    "message": "(service fsl-rdicidr) stopped 1 pending tasks."
+                },
+                {
+                    "id": "d78f4214-b8ad-4db6-bf9d-71f3d869fff7",
+                    "createdAt": "2026-09-02T01:03:53.769000-05:00",
+                    "message": "(service fsl-rdicidr) has started 1 tasks: (task 3a600ef61ca74ee7afd512555dcfcc1e)."
+                },
+                {
+                    "id": "a66ea726-e76b-4899-8367-5453fbdf9b89",
+                    "createdAt": "2026-09-02T01:03:53.045000-05:00",
+                    "message": "(service fsl-rdicidr) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-west-2:582093722569:targetgroup/fsl-rdicidr-tg/cd5137436d6fd109)"
+                },
+                {
+                    "id": "cede1bdb-313c-49c3-acc4-5fbdf8d8844a",
+                    "createdAt": "2026-09-02T01:03:22.570000-05:00",
+                    "message": "(service fsl-rdicidr) has started 1 tasks: (task c1165bafc18b4aa4a311e28509379f03)."
+                },
+                {
+                    "id": "b60c3f5a-4235-4d0b-b7a7-f7b6e2f1aecd",
+                    "createdAt": "2026-09-02T01:03:13.184000-05:00",
+                    "message": "(service fsl-rdicidr) has started 2 tasks: (task 186f2dfd4b40496e8cf84bcd5ca0fc59) (task 77545838813c4032a440df607622563b)."
+                },
+                {
+                    "id": "a6f64be9-1bac-4e8e-8851-58a8894a4a67",
+                    "createdAt": "2026-09-02T00:51:33.931000-05:00",
+                    "message": "(service fsl-rdicidr) has reached a steady state."
+                },
+                {
+                    "id": "e53dd606-13e4-4997-b552-64b2f97adadf",
+                    "createdAt": "2026-09-02T00:51:33.930000-05:00",
+                    "message": "(service fsl-rdicidr) (deployment ecs-svc/5855040662920016252) deployment completed."
+                }
+            ],
+            "createdAt": "2026-09-02T00:51:14.594000-05:00",
+            "placementConstraints": [],
+            "placementStrategy": [],
+            "networkConfiguration": {
+                "awsvpcConfiguration": {
+                    "subnets": [
+                        "subnet-08c778213c305f0c0",
+                        "subnet-0622011088cdd7137"
+                    ],
+                    "securityGroups": [
+                        "sg-0396cab4473b30fac"
+                    ],
+                    "assignPublicIp": "ENABLED"
+                }
+            },
+            "healthCheckGracePeriodSeconds": 30,
+            "schedulingStrategy": "REPLICA",
+            "deploymentController": {
+                "type": "ECS"
+            },
+            "createdBy": "arn:aws:iam::582093722569:user/fernando",
+            "enableECSManagedTags": false,
+            "propagateTags": "NONE",
+            "enableExecuteCommand": false,
+            "availabilityZoneRebalancing": "ENABLED"
+        }
+    ],
+    "failures": []
+}
