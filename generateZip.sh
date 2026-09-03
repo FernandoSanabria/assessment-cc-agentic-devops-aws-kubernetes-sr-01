@@ -51,12 +51,17 @@ echo -e "${GREEN}Compression complete: $ZIP_FILE_FULL_PATH${NC}"
 # ---------------------------------------------------------------------------
 echo -e "\n${WHITE}Verifying submission contents...${NC}"
 
-LISTING="$(unzip -l "$ZIP_FILE_FULL_PATH")"
+# Write the listing to a file rather than piping a variable into grep. `grep -q`
+# exits on its first match, which closes the pipe while the writer is still
+# going; under `set -o pipefail` that EPIPE (exit 141) becomes the status of the
+# whole pipeline and turns a successful match into a spurious failure.
+LISTING_FILE="$TMP_DIR/listing.txt"
+unzip -l "$ZIP_FILE_FULL_PATH" > "$LISTING_FILE"
 FAILED=0
 
 check() {
   local label="$1" pattern="$2"
-  if echo "$LISTING" | grep -qE "$pattern"; then
+  if grep -qE "$pattern" "$LISTING_FILE"; then
     echo -e "  ${GREEN}PASS${NC}  $label"
   else
     echo -e "  ${RED}FAIL${NC}  $label  (missing from archive)"
@@ -72,7 +77,7 @@ check ".chat-history/   (AI interaction logs)"   '[[:space:]]\.chat-history/'
 check ".ci-evidence/    (pipeline run records)"  '[[:space:]]\.ci-evidence/'
 check "evidence/        (k8s + PR + version)"    '[[:space:]]evidence/'
 
-if echo "$LISTING" | grep -q 'node_modules'; then
+if grep -q 'node_modules' "$LISTING_FILE"; then
   echo -e "  ${RED}FAIL${NC}  node_modules leaked into the archive"
   FAILED=1
 else
