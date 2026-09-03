@@ -7,6 +7,13 @@ on:
   push:
     branches:
       - main
+    # Evidence captures, chat logs and docs do not change what runs in ECS.
+    # Redeploying on them would mint a new run_id and immediately invalidate
+    # the version.json that was just captured -- a loop with no exit.
+    paths-ignore:
+      - 'evidence/**'
+      - '.chat-history/**'
+      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
