@@ -9,13 +9,13 @@
                     "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"StatefulSet\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"rdicidr\"},\"name\":\"rdicidr\",\"namespace\":\"production\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"rdicidr\"}},\"serviceName\":\"rdicidr-service\",\"template\":{\"metadata\":{\"labels\":{\"app\":\"rdicidr\"}},\"spec\":{\"containers\":[{\"image\":\"rdicidr:latest\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"failureThreshold\":1,\"httpGet\":{\"path\":\"/health\",\"port\":\"http\"},\"initialDelaySeconds\":1,\"periodSeconds\":3},\"name\":\"rdicidr\",\"ports\":[{\"containerPort\":80,\"name\":\"http\"}],\"readinessProbe\":{\"httpGet\":{\"path\":\"/health\",\"port\":\"http\"},\"initialDelaySeconds\":5,\"periodSeconds\":5},\"resources\":{\"limits\":{\"cpu\":\"250m\",\"memory\":\"128Mi\"},\"requests\":{\"cpu\":\"25m\",\"memory\":\"32Mi\"}}}]}}}}\n"
                 },
                 "creationTimestamp": "2026-09-02T04:28:36Z",
-                "generation": 1,
+                "generation": 2,
                 "labels": {
                     "app": "rdicidr"
                 },
                 "name": "rdicidr",
                 "namespace": "production",
-                "resourceVersion": "2231",
+                "resourceVersion": "5896",
                 "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
             },
             "spec": {
@@ -34,6 +34,9 @@
                 "serviceName": "rdicidr-service",
                 "template": {
                     "metadata": {
+                        "annotations": {
+                            "kubectl.kubernetes.io/restartedAt": "2026-09-02T00:19:24-05:00"
+                        },
                         "labels": {
                             "app": "rdicidr"
                         }
@@ -108,11 +111,11 @@
                 "availableReplicas": 3,
                 "collisionCount": 0,
                 "currentReplicas": 3,
-                "currentRevision": "rdicidr-7b68d7d7dd",
-                "observedGeneration": 1,
+                "currentRevision": "rdicidr-799676d9c9",
+                "observedGeneration": 2,
                 "readyReplicas": 3,
                 "replicas": 3,
-                "updateRevision": "rdicidr-7b68d7d7dd",
+                "updateRevision": "rdicidr-799676d9c9",
                 "updatedReplicas": 3
             }
         },
@@ -120,13 +123,16 @@
             "apiVersion": "v1",
             "kind": "Pod",
             "metadata": {
-                "creationTimestamp": "2026-09-02T04:28:36Z",
+                "annotations": {
+                    "kubectl.kubernetes.io/restartedAt": "2026-09-02T00:19:24-05:00"
+                },
+                "creationTimestamp": "2026-09-02T05:19:38Z",
                 "generateName": "rdicidr-",
                 "generation": 1,
                 "labels": {
                     "app": "rdicidr",
                     "apps.kubernetes.io/pod-index": "0",
-                    "controller-revision-hash": "rdicidr-7b68d7d7dd",
+                    "controller-revision-hash": "rdicidr-799676d9c9",
                     "statefulset.kubernetes.io/pod-name": "rdicidr-0"
                 },
                 "name": "rdicidr-0",
@@ -141,8 +147,8 @@
                         "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
                     }
                 ],
-                "resourceVersion": "877",
-                "uid": "f9e9ebbb-488b-4e09-979f-5dfec3bf89ea"
+                "resourceVersion": "5897",
+                "uid": "7bbc7fab-fd71-4c66-b202-ca3bb25431b3"
             },
             "spec": {
                 "containers": [
@@ -196,7 +202,7 @@
                         "volumeMounts": [
                             {
                                 "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-                                "name": "kube-api-access-4ffq2",
+                                "name": "kube-api-access-xns9l",
                                 "readOnly": true
                             }
                         ]
@@ -231,7 +237,7 @@
                 ],
                 "volumes": [
                     {
-                        "name": "kube-api-access-4ffq2",
+                        "name": "kube-api-access-xns9l",
                         "projected": {
                             "defaultMode": 420,
                             "sources": [
@@ -278,35 +284,35 @@
                 "conditions": [
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:37Z",
+                        "lastTransitionTime": "2026-09-02T05:19:39Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "PodReadyToStartContainers"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:36Z",
+                        "lastTransitionTime": "2026-09-02T05:19:38Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "Initialized"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:42Z",
+                        "lastTransitionTime": "2026-09-02T05:19:44Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "Ready"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:42Z",
+                        "lastTransitionTime": "2026-09-02T05:19:44Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "ContainersReady"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:36Z",
+                        "lastTransitionTime": "2026-09-02T05:19:38Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "PodScheduled"
@@ -318,9 +324,9 @@
                             "cpu": "25m",
                             "memory": "32Mi"
                         },
-                        "containerID": "containerd://5e495a89851e912ed48c4d6663c1e96b5f10674719417df3a4cdf57277d81dae",
+                        "containerID": "containerd://67022c38896cb7099f85e86b3641a6dfa9f976d12e01f51c1bbcec7192ac735d",
                         "image": "docker.io/library/rdicidr:latest",
-                        "imageID": "docker.io/library/import-2026-09-02@sha256:68e328d60ad17cc5cb40eab46fe8ef12730022e98dfb8b893d5d25516f945b4e",
+                        "imageID": "docker.io/library/import-2026-09-02@sha256:3f3613afeec3ee2acb4967f523f39d17a71e5690db312bb935dccf7dafc0809d",
                         "lastState": {},
                         "name": "rdicidr",
                         "ready": true,
@@ -338,7 +344,7 @@
                         "started": true,
                         "state": {
                             "running": {
-                                "startedAt": "2026-09-02T04:28:37Z"
+                                "startedAt": "2026-09-02T05:19:39Z"
                             }
                         },
                         "user": {
@@ -363,7 +369,7 @@
                         "volumeMounts": [
                             {
                                 "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-                                "name": "kube-api-access-4ffq2",
+                                "name": "kube-api-access-xns9l",
                                 "readOnly": true,
                                 "recursiveReadOnly": "Disabled"
                             }
@@ -378,10 +384,10 @@
                 ],
                 "observedGeneration": 1,
                 "phase": "Running",
-                "podIP": "10.244.0.6",
+                "podIP": "10.244.0.21",
                 "podIPs": [
                     {
-                        "ip": "10.244.0.6"
+                        "ip": "10.244.0.21"
                     }
                 ],
                 "qosClass": "Burstable",
@@ -394,20 +400,23 @@
                         "memory": "32Mi"
                     }
                 },
-                "startTime": "2026-09-02T04:28:36Z"
+                "startTime": "2026-09-02T05:19:38Z"
             }
         },
         {
             "apiVersion": "v1",
             "kind": "Pod",
             "metadata": {
-                "creationTimestamp": "2026-09-02T04:40:40Z",
+                "annotations": {
+                    "kubectl.kubernetes.io/restartedAt": "2026-09-02T00:19:24-05:00"
+                },
+                "creationTimestamp": "2026-09-02T05:19:31Z",
                 "generateName": "rdicidr-",
                 "generation": 1,
                 "labels": {
                     "app": "rdicidr",
                     "apps.kubernetes.io/pod-index": "1",
-                    "controller-revision-hash": "rdicidr-7b68d7d7dd",
+                    "controller-revision-hash": "rdicidr-799676d9c9",
                     "statefulset.kubernetes.io/pod-name": "rdicidr-1"
                 },
                 "name": "rdicidr-1",
@@ -422,8 +431,8 @@
                         "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
                     }
                 ],
-                "resourceVersion": "2232",
-                "uid": "7a628d55-65f1-4b47-b900-3bc9e577ac8d"
+                "resourceVersion": "5852",
+                "uid": "dacb61c4-64bc-4ea2-aa52-8549c5940f34"
             },
             "spec": {
                 "containers": [
@@ -477,7 +486,7 @@
                         "volumeMounts": [
                             {
                                 "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-                                "name": "kube-api-access-htj8r",
+                                "name": "kube-api-access-dhw5g",
                                 "readOnly": true
                             }
                         ]
@@ -512,7 +521,7 @@
                 ],
                 "volumes": [
                     {
-                        "name": "kube-api-access-htj8r",
+                        "name": "kube-api-access-dhw5g",
                         "projected": {
                             "defaultMode": 420,
                             "sources": [
@@ -559,35 +568,35 @@
                 "conditions": [
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:40:40Z",
+                        "lastTransitionTime": "2026-09-02T05:19:32Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "PodReadyToStartContainers"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:40:40Z",
+                        "lastTransitionTime": "2026-09-02T05:19:31Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "Initialized"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:40:46Z",
+                        "lastTransitionTime": "2026-09-02T05:19:37Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "Ready"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:40:46Z",
+                        "lastTransitionTime": "2026-09-02T05:19:37Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "ContainersReady"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:40:40Z",
+                        "lastTransitionTime": "2026-09-02T05:19:31Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "PodScheduled"
@@ -599,9 +608,9 @@
                             "cpu": "25m",
                             "memory": "32Mi"
                         },
-                        "containerID": "containerd://b94834f08640f91b5b823410316987e370d8ace3077ca697aa836fe88f07c5b9",
+                        "containerID": "containerd://fb3008f77e523f0cdbf10b3f6f00f6a58848bbabad0d99e8a09c1645d799519a",
                         "image": "docker.io/library/rdicidr:latest",
-                        "imageID": "docker.io/library/import-2026-09-02@sha256:68e328d60ad17cc5cb40eab46fe8ef12730022e98dfb8b893d5d25516f945b4e",
+                        "imageID": "docker.io/library/import-2026-09-02@sha256:3f3613afeec3ee2acb4967f523f39d17a71e5690db312bb935dccf7dafc0809d",
                         "lastState": {},
                         "name": "rdicidr",
                         "ready": true,
@@ -619,7 +628,7 @@
                         "started": true,
                         "state": {
                             "running": {
-                                "startedAt": "2026-09-02T04:40:40Z"
+                                "startedAt": "2026-09-02T05:19:32Z"
                             }
                         },
                         "user": {
@@ -644,7 +653,7 @@
                         "volumeMounts": [
                             {
                                 "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-                                "name": "kube-api-access-htj8r",
+                                "name": "kube-api-access-dhw5g",
                                 "readOnly": true,
                                 "recursiveReadOnly": "Disabled"
                             }
@@ -659,10 +668,10 @@
                 ],
                 "observedGeneration": 1,
                 "phase": "Running",
-                "podIP": "10.244.0.18",
+                "podIP": "10.244.0.20",
                 "podIPs": [
                     {
-                        "ip": "10.244.0.18"
+                        "ip": "10.244.0.20"
                     }
                 ],
                 "qosClass": "Burstable",
@@ -675,20 +684,23 @@
                         "memory": "32Mi"
                     }
                 },
-                "startTime": "2026-09-02T04:40:40Z"
+                "startTime": "2026-09-02T05:19:31Z"
             }
         },
         {
             "apiVersion": "v1",
             "kind": "Pod",
             "metadata": {
-                "creationTimestamp": "2026-09-02T04:28:48Z",
+                "annotations": {
+                    "kubectl.kubernetes.io/restartedAt": "2026-09-02T00:19:24-05:00"
+                },
+                "creationTimestamp": "2026-09-02T05:19:24Z",
                 "generateName": "rdicidr-",
                 "generation": 1,
                 "labels": {
                     "app": "rdicidr",
                     "apps.kubernetes.io/pod-index": "2",
-                    "controller-revision-hash": "rdicidr-7b68d7d7dd",
+                    "controller-revision-hash": "rdicidr-799676d9c9",
                     "statefulset.kubernetes.io/pod-name": "rdicidr-2"
                 },
                 "name": "rdicidr-2",
@@ -703,8 +715,8 @@
                         "uid": "50ceca2d-7b09-41ae-a5b9-082e7fd04f41"
                     }
                 ],
-                "resourceVersion": "929",
-                "uid": "d2b8efdf-702b-4f81-b52c-a4cba25ab611"
+                "resourceVersion": "5810",
+                "uid": "5ee34441-1ca3-4874-be96-07ed4e3221a8"
             },
             "spec": {
                 "containers": [
@@ -758,7 +770,7 @@
                         "volumeMounts": [
                             {
                                 "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-                                "name": "kube-api-access-986ls",
+                                "name": "kube-api-access-jffqc",
                                 "readOnly": true
                             }
                         ]
@@ -793,7 +805,7 @@
                 ],
                 "volumes": [
                     {
-                        "name": "kube-api-access-986ls",
+                        "name": "kube-api-access-jffqc",
                         "projected": {
                             "defaultMode": 420,
                             "sources": [
@@ -840,35 +852,35 @@
                 "conditions": [
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:49Z",
+                        "lastTransitionTime": "2026-09-02T05:19:25Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "PodReadyToStartContainers"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:48Z",
+                        "lastTransitionTime": "2026-09-02T05:19:24Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "Initialized"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:54Z",
+                        "lastTransitionTime": "2026-09-02T05:19:30Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "Ready"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:54Z",
+                        "lastTransitionTime": "2026-09-02T05:19:30Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "ContainersReady"
                     },
                     {
                         "lastProbeTime": null,
-                        "lastTransitionTime": "2026-09-02T04:28:48Z",
+                        "lastTransitionTime": "2026-09-02T05:19:24Z",
                         "observedGeneration": 1,
                         "status": "True",
                         "type": "PodScheduled"
@@ -880,9 +892,9 @@
                             "cpu": "25m",
                             "memory": "32Mi"
                         },
-                        "containerID": "containerd://1f24b1b628a29c176f10707e5ef59869dd2cf5ba40e99be7927a9b2445778e19",
+                        "containerID": "containerd://be571bfb4632a1dffe08e2b30154c610094dbbb038d5b29638cc64b75d5ab897",
                         "image": "docker.io/library/rdicidr:latest",
-                        "imageID": "docker.io/library/import-2026-09-02@sha256:68e328d60ad17cc5cb40eab46fe8ef12730022e98dfb8b893d5d25516f945b4e",
+                        "imageID": "docker.io/library/import-2026-09-02@sha256:3f3613afeec3ee2acb4967f523f39d17a71e5690db312bb935dccf7dafc0809d",
                         "lastState": {},
                         "name": "rdicidr",
                         "ready": true,
@@ -900,7 +912,7 @@
                         "started": true,
                         "state": {
                             "running": {
-                                "startedAt": "2026-09-02T04:28:49Z"
+                                "startedAt": "2026-09-02T05:19:25Z"
                             }
                         },
                         "user": {
@@ -925,7 +937,7 @@
                         "volumeMounts": [
                             {
                                 "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-                                "name": "kube-api-access-986ls",
+                                "name": "kube-api-access-jffqc",
                                 "readOnly": true,
                                 "recursiveReadOnly": "Disabled"
                             }
@@ -940,10 +952,10 @@
                 ],
                 "observedGeneration": 1,
                 "phase": "Running",
-                "podIP": "10.244.0.8",
+                "podIP": "10.244.0.19",
                 "podIPs": [
                     {
-                        "ip": "10.244.0.8"
+                        "ip": "10.244.0.19"
                     }
                 ],
                 "qosClass": "Burstable",
@@ -956,7 +968,7 @@
                         "memory": "32Mi"
                     }
                 },
-                "startTime": "2026-09-02T04:28:48Z"
+                "startTime": "2026-09-02T05:19:24Z"
             }
         },
         {
@@ -1004,7 +1016,7 @@
             "kind": "Endpoints",
             "metadata": {
                 "annotations": {
-                    "endpoints.kubernetes.io/last-change-trigger-time": "2026-09-02T04:40:46Z"
+                    "endpoints.kubernetes.io/last-change-trigger-time": "2026-09-02T05:19:44Z"
                 },
                 "creationTimestamp": "2026-09-02T04:28:36Z",
                 "labels": {
@@ -1012,43 +1024,43 @@
                 },
                 "name": "rdicidr-service",
                 "namespace": "production",
-                "resourceVersion": "2230",
+                "resourceVersion": "5895",
                 "uid": "b3188769-835b-4b16-8bae-0c938555ba8e"
             },
             "subsets": [
                 {
                     "addresses": [
                         {
-                            "hostname": "rdicidr-1",
-                            "ip": "10.244.0.18",
-                            "nodeName": "fsl-challenge-control-plane",
-                            "targetRef": {
-                                "kind": "Pod",
-                                "name": "rdicidr-1",
-                                "namespace": "production",
-                                "uid": "7a628d55-65f1-4b47-b900-3bc9e577ac8d"
-                            }
-                        },
-                        {
-                            "hostname": "rdicidr-0",
-                            "ip": "10.244.0.6",
-                            "nodeName": "fsl-challenge-control-plane",
-                            "targetRef": {
-                                "kind": "Pod",
-                                "name": "rdicidr-0",
-                                "namespace": "production",
-                                "uid": "f9e9ebbb-488b-4e09-979f-5dfec3bf89ea"
-                            }
-                        },
-                        {
                             "hostname": "rdicidr-2",
-                            "ip": "10.244.0.8",
+                            "ip": "10.244.0.19",
                             "nodeName": "fsl-challenge-control-plane",
                             "targetRef": {
                                 "kind": "Pod",
                                 "name": "rdicidr-2",
                                 "namespace": "production",
-                                "uid": "d2b8efdf-702b-4f81-b52c-a4cba25ab611"
+                                "uid": "5ee34441-1ca3-4874-be96-07ed4e3221a8"
+                            }
+                        },
+                        {
+                            "hostname": "rdicidr-1",
+                            "ip": "10.244.0.20",
+                            "nodeName": "fsl-challenge-control-plane",
+                            "targetRef": {
+                                "kind": "Pod",
+                                "name": "rdicidr-1",
+                                "namespace": "production",
+                                "uid": "dacb61c4-64bc-4ea2-aa52-8549c5940f34"
+                            }
+                        },
+                        {
+                            "hostname": "rdicidr-0",
+                            "ip": "10.244.0.21",
+                            "nodeName": "fsl-challenge-control-plane",
+                            "targetRef": {
+                                "kind": "Pod",
+                                "name": "rdicidr-0",
+                                "namespace": "production",
+                                "uid": "7bbc7fab-fd71-4c66-b202-ca3bb25431b3"
                             }
                         }
                     ],
